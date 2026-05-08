@@ -1,4 +1,4 @@
-# Inventory Tweaks Refoxed
+# Inventory Tweaks Reloaded
 
 An updated fork of Inventory Tweaks Renewed.
 

@@ -1,50 +1,43 @@
 package invtweaks.network;
 
 import invtweaks.InvTweaksMod;
+import invtweaks.util.SortMode;
 import invtweaks.util.Sorting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.handling.IPayloadHandler;
 
-public class PacketSortInv implements CustomPacketPayload, IPayloadHandler<PacketSortInv>
-{
-    private final boolean isPlayer;
-    private final String screenName;
+public record PacketSortInv(boolean isPlayer, String screenName, int sortMode, boolean reverse) implements CustomPacketPayload {
+    public static final Type<PacketSortInv> TYPE = new Type<>(Identifier.fromNamespaceAndPath(InvTweaksMod.MODID, "packet_sort_inv"));
 
-    public static final Type<PacketSortInv> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(InvTweaksMod.MODID, "packet_sort_inv"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSortInv> CODEC = new StreamCodec<>()
-    {
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSortInv> CODEC = new StreamCodec<>() {
         @Override
-        public PacketSortInv decode(RegistryFriendlyByteBuf buff) {
-            return new PacketSortInv(buff.readBoolean(), buff.readUtf());
+        public PacketSortInv decode(RegistryFriendlyByteBuf buf) {
+            return new PacketSortInv(buf.readBoolean(), buf.readUtf(), buf.readByte(), buf.readBoolean());
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buffer, PacketSortInv packetSortInv) {
-            buffer.writeBoolean(packetSortInv.isPlayer);
-            buffer.writeUtf(packetSortInv.screenName);
+        public void encode(RegistryFriendlyByteBuf buf, PacketSortInv payload) {
+            buf.writeBoolean(payload.isPlayer);
+            buf.writeUtf(payload.screenName);
+            buf.writeByte(payload.sortMode);
+            buf.writeBoolean(payload.reverse);
         }
     };
-
-    public PacketSortInv(boolean isPlayer, String screenClass) {
-        this.isPlayer = isPlayer;
-        this.screenName = screenClass;
-    }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    @Override
-    public void handle(PacketSortInv payload, IPayloadContext context) {
-        context.enqueueWork(() -> Sorting.executeSort(context.player(), payload.isPlayer, payload.screenName))
-            .exceptionally(e -> {
-                InvTweaksMod.LOGGER.error("Failed to sort inventory", e);
-                return null;
-            });
+    public static void handle(PacketSortInv payload, IPayloadContext context) {
+        SortMode mode = SortMode.fromOrdinal(payload.sortMode);
+        context.enqueueWork(() -> Sorting.executeSort(context.player(), payload.isPlayer, payload.screenName, mode, payload.reverse))
+                .exceptionally(e -> {
+                    InvTweaksMod.LOGGER.error("Failed to sort inventory", e);
+                    return null;
+                });
     }
 }

@@ -6,18 +6,16 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@EventBusSubscriber(modid = InvTweaksMod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public class NetworkDispatcher {
-    private NetworkDispatcher() {
-        // nothing to do
-    }
+@EventBusSubscriber(modid = InvTweaksMod.MODID)
+public final class NetworkDispatcher {
+    private NetworkDispatcher() {}
 
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(InvTweaksMod.MODID);
 
         registrar.optional()
-                .playToServer(PacketSortInv.TYPE, PacketSortInv.CODEC, (payload, context) -> payload.handle(payload, context))
-                .playToServer(PacketUpdateConfig.TYPE, PacketUpdateConfig.CODEC, (payload, context) -> payload.handle(payload, context));
+                .playToServer(PacketSortInv.TYPE, PacketSortInv.CODEC, PacketSortInv::handle)
+                .playToServer(PacketUpdateConfig.TYPE, PacketUpdateConfig.CODEC, PacketUpdateConfig::handle);
     }
 }

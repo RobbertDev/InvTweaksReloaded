@@ -3,6 +3,8 @@
         "description": {
             "text": "Inventory Tweaks resources"
         },
-        "pack_format": 15
+        "pack_format": 101,
+        "min_format": [101, 1],
+        "max_format": [101, 1]
     }
 }

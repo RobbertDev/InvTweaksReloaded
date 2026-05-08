@@ -24,3 +24,7 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# Claude Code project notes (local only)
+CLAUDE.md
+

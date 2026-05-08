@@ -1,6 +1,9 @@
 {
-  "key.categories.invtweaks": "Inventory Tweaks ReFoxed",
+  "key.categories.invtweaks": "Inventory Tweaks Reloaded",
   "key.invtweaks_sort_player.desc": "Sort Player Inventory",
   "key.invtweaks_sort_inventory.desc": "Sort External Inventory",
-  "key.invtweaks_sort_either.desc": "Sort Inventory Under Cursor"
+  "key.invtweaks_sort_either.desc": "Sort Inventory Under Cursor",
+  "invtweaks.sort.default": "Default sort (categories & rules)",
+  "invtweaks.sort.name": "Sort by name (A → Z)",
+  "invtweaks.sort.count": "Sort by stack count (most → least)"
 }
